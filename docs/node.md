@@ -20,12 +20,15 @@
 ```mermaid
 flowchart TD
     A[Client Sends Request] --> B[Server Receives]
-    B --> C[Parse Headers/Body]
-    C --> D[Middleware Execution]
-    D --> E[Route Matching]
-    E --> F[Controller Logic (DB Query)]
-    F --> G[Response Formatting]
-    G --> H[Send Response to Client]
+    B --> C[Parse Headers and Body]
+    D["Middlewares Execute (e.g., Auth, Logging)"] --> E["Route Matching (URL Pattern)"]
+    C --> D
+    E --> F[Controller Logic]
+    F --> G1[Query Database]
+    F --> G2[Process Data]
+    G1 --> H["Format Response (HTML/JSON)"]
+    G2 --> H
+    H --> I[Send Response to Client]
 ```
 
 ### HTTP vs HTTPS
@@ -205,11 +208,11 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Client Sends Request] --> B[Server Receives]
+    A["Client Sends Request"] --> B["Server Receives"]
     B --> C[Parse Headers/Body]
     C --> D[Middleware Execution]
     D --> E[Route Matching]
-    E --> F[Controller Logic (DB Query)]
+    E --> F["Controller Logic (DB Query)"]
     F --> G[Response Formatting]
     G --> H[Send Response to Client]
 ```

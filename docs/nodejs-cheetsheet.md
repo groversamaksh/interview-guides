@@ -505,7 +505,7 @@ pipeline(req.fileStream, dbInsertStream, (err) => {
 graph TD
     Client --> LB
     LB --> ServiceA, ServiceB, ServiceC
-    ServiceA <--> Redis [Shared Cache]
+    ServiceA <--> Redis ["Shared Cache"]
     ServiceA <--> DB [Sharded]
     ServiceA --> Event --> Kafka
 ```
