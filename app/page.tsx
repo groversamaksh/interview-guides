@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getDocsTree } from "@/lib/docs";
 import { formatLabel } from "@/lib/utils";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
   const tree = getDocsTree();
@@ -11,14 +12,17 @@ export default function Home() {
   return (
     <div className="mx-auto min-h-screen max-w-5xl px-6 py-16 sm:px-8">
       {/* Header */}
-      <header className="mb-16">
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">
-          Interview Guides
-        </h1>
-        <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-          Comprehensive preparation guides for technical interviews across
-          frontend, backend, and mobile development.
-        </p>
+      <header className="mb-16 flex items-start justify-between">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">
+            Interview Guides
+          </h1>
+          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
+            Comprehensive preparation guides for technical interviews across
+            frontend, backend, and mobile development.
+          </p>
+        </div>
+        <ThemeToggle />
       </header>
 
       {/* Guide Sections */}

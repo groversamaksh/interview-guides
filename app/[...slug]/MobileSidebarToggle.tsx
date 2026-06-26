@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import ThemeToggle from "@/components/ThemeToggle";
 import type { DocNode } from "@/lib/types";
 
 interface MobileSidebarToggleProps {
@@ -63,7 +64,7 @@ export default function MobileSidebarToggle({ tree }: MobileSidebarToggleProps) 
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-14 items-center border-b border-zinc-200 px-4 dark:border-zinc-800">
+        <div className="flex h-14 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
           <a
             href="/"
             className="text-sm font-semibold text-zinc-900 dark:text-zinc-100"
@@ -71,6 +72,7 @@ export default function MobileSidebarToggle({ tree }: MobileSidebarToggleProps) 
           >
             Interview Guides
           </a>
+          <ThemeToggle />
         </div>
         <Sidebar tree={tree} onNavigate={() => setOpen(false)} />
       </aside>

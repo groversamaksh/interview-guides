@@ -1,24 +1,27 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useTheme } from "next-themes";
 import mermaid from "mermaid";
-
-// Initialize once at module level
-mermaid.initialize({
-  startOnLoad: false,
-  theme: "dark",
-  securityLevel: "loose",
-  fontFamily: "inherit",
-});
 
 interface MermaidDiagramProps {
   content: string;
 }
 
 export default function MermaidDiagram({ content }: MermaidDiagramProps) {
+  const { resolvedTheme } = useTheme();
   const id = useRef(`mermaid-${Math.random().toString(36).slice(2, 9)}`);
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: resolvedTheme === "dark" ? "dark" : "default",
+      securityLevel: "loose",
+      fontFamily: "inherit",
+    });
+  }, [resolvedTheme]);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,7 +41,7 @@ export default function MermaidDiagram({ content }: MermaidDiagramProps) {
     return () => {
       cancelled = true;
     };
-  }, [content]);
+  }, [content, resolvedTheme]);
 
   if (error) {
     return (

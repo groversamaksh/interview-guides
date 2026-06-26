@@ -2,6 +2,8 @@
 
 @plugin "@tailwindcss/typography";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -14,11 +16,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
@@ -68,10 +68,8 @@ pre:has(code) {
   line-height: 1.625;
 }
 
-@media (prefers-color-scheme: dark) {
-  pre:has(code) {
-    border-color: #3f3f46;
-  }
+.dark pre:has(code) {
+  border-color: #3f3f46;
 }
 
 pre code.hljs {
@@ -87,10 +85,8 @@ pre code.hljs {
   font-size: 0.875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :not(pre) > code {
-    background-color: #27272a;
-  }
+.dark :not(pre) > code {
+  background-color: #27272a;
 }
 
 /* Scrollbar styling for sidebar */
@@ -107,8 +103,6 @@ pre code.hljs {
   border-radius: 3px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .sidebar-scroll::-webkit-scrollbar-thumb {
-    background: #3f3f46;
-  }
+.dark .sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #3f3f46;
 }

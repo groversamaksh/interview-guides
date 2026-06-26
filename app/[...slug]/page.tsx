@@ -10,6 +10,7 @@ import {
 import Sidebar from "@/components/Sidebar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import MarkdownContent from "@/components/MarkdownContent";
+import ThemeToggle from "@/components/ThemeToggle";
 import MobileSidebarToggle from "./MobileSidebarToggle";
 
 interface Props {
@@ -46,13 +47,14 @@ export default async function DocPage({ params }: Props) {
     <div className="min-h-screen">
       {/* Desktop sidebar — fixed, independently scrollable */}
       <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col overflow-hidden border-r border-zinc-200 bg-zinc-50/50 lg:flex dark:border-zinc-800 dark:bg-zinc-900/50">
-        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 px-4 dark:border-zinc-800">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
           <Link
             href="/"
             className="text-sm font-semibold text-zinc-900 hover:text-blue-600 dark:text-zinc-100 dark:hover:text-blue-400"
           >
             Interview Guides
           </Link>
+          <ThemeToggle />
         </div>
         <Sidebar tree={tree} />
       </aside>
