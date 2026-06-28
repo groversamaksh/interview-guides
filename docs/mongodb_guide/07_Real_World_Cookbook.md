@@ -2,9 +2,10 @@
 
 ## 100 Real-World Query Cookbook
 
-*(Note: To maintain conciseness, queries are grouped by domain and use case, representing 100 common production patterns)*
+_(Note: To maintain conciseness, queries are grouped by domain and use case, representing 100 common production patterns)_
 
 ### User Management & Auth (1-15)
+
 1. **Find User by Email:** `db.users.findOne({ email: "user@domain.com" })`
 2. **Find Active Users:** `db.users.find({ status: "active" })`
 3. **Soft Delete User:** `db.users.updateOne({ _id: uId }, { $set: { deletedAt: new Date(), status: "deleted" } })`
@@ -22,6 +23,7 @@
 15. **Delete Unverified (Cleanup):** `db.users.deleteMany({ isEmailVerified: false, createdAt: { $lt: thirtyDaysAgo } })`
 
 ### E-commerce & Products (16-35)
+
 16. **Find Product by SKU:** `db.products.findOne({ sku: "ABC-123" })`
 17. **Search by Category:** `db.products.find({ category: "Electronics" })`
 18. **In Stock Only:** `db.products.find({ inventoryCount: { $gt: 0 } })`
@@ -44,6 +46,7 @@
 35. **Find by Tag (All):** `db.products.find({ tags: { $all: ["wireless", "noise-canceling"] } })`
 
 ### Orders & Payments (36-55)
+
 36. **Create Order:** `db.orders.insertOne(orderDoc)`
 37. **Find User's Orders:** `db.orders.find({ userId: uId }).sort({ createdAt: -1 })`
 38. **Find Pending Orders:** `db.orders.find({ status: "pending" })`
@@ -66,7 +69,9 @@
 55. **Group Orders by Status:** `db.orders.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }])`
 
 ### Analytics, Activity & Reporting (56-100)
-*(Applying aggregation pipelines for Dashboards and Logs)*
+
+_(Applying aggregation pipelines for Dashboards and Logs)_
+
 56. **Log Activity:** `db.activityLogs.insertOne({ userId: uId, action: "login", ip: "1.2.3.4", timestamp: new Date() })`
 57. **User Activity Timeline:** `db.activityLogs.find({ userId: uId }).sort({ timestamp: -1 }).limit(50)`
 58. **Daily Active Users (DAU):** `db.activityLogs.aggregate([{ $match: { timestamp: { $gte: startOfDay } } }, { $group: { _id: "$userId" } }, { $count: "dau" }])`
@@ -79,7 +84,7 @@
 65. **Monthly Revenue Growth:** `$group` by year/month, calculate revenue.
 66. **Top Selling Products this Week:** `$match` date, `$unwind` items, `$group` by productId, sum quantity.
 67. **Cart Abandonment Rate:** Orders in "cart" state older than 2 hours vs total created today.
-68. **Inventory Valuation:** `$group` product price * inventoryCount.
+68. **Inventory Valuation:** `$group` product price \* inventoryCount.
 69. **Search Term Frequency:** `$group` on `searchLogs` by `term`.
 70. **Zero-Result Searches:** `db.searchLogs.find({ resultCount: 0 })`
 71. **Geospatial - Find Near Me:** `db.stores.find({ location: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 5000 } } })`
@@ -111,36 +116,41 @@
 97. **Find Nth Highest:** `$sort` descending, `$skip` N-1, `$limit` 1.
 98. **Random Document:** `db.users.aggregate([{ $sample: { size: 1 } }])`
 99. **Find by Array length:** `db.users.find({ "hobbies.3": { $exists: true } })` (Has at least 4 hobbies).
-100. **Find Null vs Missing:** Null: `find({ val: null })`. Missing: `find({ val: { $exists: false } })`.
+100.  **Find Null vs Missing:** Null: `find({ val: null })`. Missing: `find({ val: { $exists: false } })`.
 
 ---
 
 ## Senior MongoDB Developer Notes
 
 ### 1. Performance & Indexing
-*   **The ESR Rule:** When creating compound indexes, order fields by: **E**quality, **S**ort, **R**ange.
-*   Avoid large skips (`skip(100000)`). Use Cursor-based pagination (`find({ _id: { $gt: lastId } })`).
-*   Covered queries are your best friend. Project only the fields you need.
-*   Never run unbounded queries in production (`find({})` without `limit`).
+
+- **The ESR Rule:** When creating compound indexes, order fields by: **E**quality, **S**ort, **R**ange.
+- Avoid large skips (`skip(100000)`). Use Cursor-based pagination (`find({ _id: { $gt: lastId } })`).
+- Covered queries are your best friend. Project only the fields you need.
+- Never run unbounded queries in production (`find({})` without `limit`).
 
 ### 2. Schema Design & Modeling
-*   Data that is accessed together should be stored together. (Embed over Reference by default).
-*   Beware of the 16MB document limit. Do not embed arrays that can grow infinitely (e.g., all comments on a viral post). Move them to a separate collection.
-*   Use the **Outlier Pattern** for the "exceptions to the rule" (e.g., standard posts embed comments, but viral posts reference a comments collection).
-*   Use the **Bucket Pattern** for time-series data to dramatically reduce index size and document count.
+
+- Data that is accessed together should be stored together. (Embed over Reference by default).
+- Beware of the 16MB document limit. Do not embed arrays that can grow infinitely (e.g., all comments on a viral post). Move them to a separate collection.
+- Use the **Outlier Pattern** for the "exceptions to the rule" (e.g., standard posts embed comments, but viral posts reference a comments collection).
+- Use the **Bucket Pattern** for time-series data to dramatically reduce index size and document count.
 
 ### 3. Aggregation Optimization
-*   Always put `$match` and `$sort` as the very first stages to take advantage of indexes and reduce the pipeline payload early.
-*   `$lookup` can be slow on large datasets. Ensure the `foreignField` is indexed. 
-*   Avoid `$unwind` if you just need to measure the size of an array. Use `$size`.
+
+- Always put `$match` and `$sort` as the very first stages to take advantage of indexes and reduce the pipeline payload early.
+- `$lookup` can be slow on large datasets. Ensure the `foreignField` is indexed.
+- Avoid `$unwind` if you just need to measure the size of an array. Use `$size`.
 
 ### 4. Production Checklists & Traps
-*   **Trap:** Relying on MongoDB to enforce relational integrity. You must handle cascading deletes in your application code.
-*   **Trap:** Defaulting to Mongoose for heavily read-intensive analytics. Use the native driver for raw speed when running massive aggregations.
-*   Always enable authentication. Ensure your port 27017 is not exposed to the public internet.
-*   Use Replica Sets for everything in production (even single-node replica sets) to enable the oplog and transactions.
+
+- **Trap:** Relying on MongoDB to enforce relational integrity. You must handle cascading deletes in your application code.
+- **Trap:** Defaulting to Mongoose for heavily read-intensive analytics. Use the native driver for raw speed when running massive aggregations.
+- Always enable authentication. Ensure your port 27017 is not exposed to the public internet.
+- Use Replica Sets for everything in production (even single-node replica sets) to enable the oplog and transactions.
 
 ### 5. Interview Advice
-*   When asked "SQL vs NoSQL", do not say NoSQL is faster. Explain that NoSQL scales horizontally more easily and offers flexible schemas, but sacrifices native join performance and strict ACID guarantees (though modern MongoDB supports ACID).
-*   Be prepared to explain the difference between a Collection Scan and an Index Scan.
-*   Know how to draw an architecture diagram of a Replica Set (Primary, Secondary, Oplog).
+
+- When asked "SQL vs NoSQL", do not say NoSQL is faster. Explain that NoSQL scales horizontally more easily and offers flexible schemas, but sacrifices native join performance and strict ACID guarantees (though modern MongoDB supports ACID).
+- Be prepared to explain the difference between a Collection Scan and an Index Scan.
+- Know how to draw an architecture diagram of a Replica Set (Primary, Secondary, Oplog).
