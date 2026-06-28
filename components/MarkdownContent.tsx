@@ -6,6 +6,17 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import MermaidDiagram from "./MermaidDiagram";
 
+import dart from "highlight.js/lib/languages/dart";
+import kotlin from "highlight.js/lib/languages/kotlin";
+import java from "highlight.js/lib/languages/java";
+import json from "highlight.js/lib/languages/json";
+import bash from "highlight.js/lib/languages/bash";
+import python from "highlight.js/lib/languages/python";
+import css from "highlight.js/lib/languages/css";
+import html from "highlight.js/lib/languages/xml";
+import typescript from "highlight.js/lib/languages/typescript";
+import javascript from "highlight.js/lib/languages/javascript";
+
 interface MarkdownContentProps {
   content: string;
 }
@@ -21,7 +32,12 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
-          [rehypeHighlight, { detect: true, ignoreMissing: true, plainText: ["mermaid"] }],
+          [rehypeHighlight, {
+            detect: true,
+            ignoreMissing: true,
+            plainText: ["mermaid"],
+            languages: { dart, kotlin, java, json, bash, python, css, html, typescript, javascript }
+          }],
           rehypeSlug,
           [
             rehypeAutolinkHeadings,
